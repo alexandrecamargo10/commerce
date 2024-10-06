@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %} Listing page {% endblock %}
+
+{% block body %}
+    <div class="listingSheet">
+        <div class="listingSheetItem">
+            <h1>{{ listing.title }}</h1>
+        </div>
+        <div class="listingSheetItem">
+            {{ listing.description }}
+        </div>
+        <div class="listingSheetItem">
+            <img src="{{ listing.imageUrl }}" alt="Product image">
+        </div>
+        <div class="listingSheetItem" id="bid">
+            <!-- Checking if there is a bid on this listing and displaying or displaying the start bid if there's not -->
+            {% if lastBid is not None %}
+                U${{ lastBid }}
+            {% else %}
+                U${{ listing.startBid }}
+            {% endif %}
+            {% if user.is_authenticated %}
+                <form action="{% url 'bid' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" step="0.5" min="{{ lastBid }}" placeholder="NEW BID" name="bid">
+                    <input type="submit" value="GIVE BID">
+                </form>
+            {% else %}
+                <div class="login-message">
+                    <a href="{% url 'login' %}">Log In</a> or 
+                    <a href="{% url 'register' %}">Sign in</a> to bid!
+                </div>
+            {% endif %}
+            {% if message %}
+                <div class="message">{{ message }}</div>
+            {% endif %}
+        </div>
+
+        <div class="listingSheetItem" id="comments"><h4>Comments:</h4></div>
+    </div>
+{% endblock %}
